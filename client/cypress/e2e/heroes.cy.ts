@@ -15,6 +15,21 @@ describe('Heroes App - Basic Features', () => {
     cy.get('form').should('exist');
   });
 
+  it('should log in with valid credentials', () => {
+    // open login modal
+    cy.contains('Login').click({ force: true });
+
+    // fill form and submit
+    cy.get('form').within(() => {
+      cy.get('input[type="email"]').type('admin@test.com'); // email input
+      cy.get('input[type="password"]').type('test123');     // password input
+      cy.contains('Sign in').click();                       // submit button
+    });
+
+    // check if logged in successfully
+    cy.contains('Logout').should('be.visible');
+  });
+
   it('should allow adding a new hero', () => {
     // to be implemented
   });
