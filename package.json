@@ -29,9 +29,14 @@
   "homepage": "https://github.com/elylucas/cypress-heroes#readme",
   "devDependencies": {
     "concurrently": "^7.6.0",
-    "rimraf": "^4.1.0"
+    "rimraf": "^4.1.0",
+    "ts-node": "^10.9.2",
+    "webpack": "^5.99.9"
   },
   "prisma": {
     "schema": "server/prisma/schema.prisma"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0"
   }
 }
