@@ -1,0 +1,25 @@
+# Caso de Teste: Login com credenciais inválidas
+
+**1. Título:** Login com email ou senha incorretos
+
+**2. Pré-condição:**  
+Usuário **não cadastrado** ou com senha incorreta.
+
+**3. Passo-a-passo dos testes:**  
+- Acessar `/heroes`  
+- Clicar no botão **Login**  
+- Inserir o email `invalid@user.com`  
+- Inserir a senha `wrongpass`  
+- Clicar no botão **Sign in**
+
+**4. Resultado esperado:**  
+Mensagem de erro **"Invalid credentials"** deve ser exibida.
+
+**5. Cenário de teste:**  
+Usuário insere credenciais inválidas e falha ao tentar se autenticar
+
+**6. Ambiente de teste:**  
+Windows 10 – Chrome 137 – Wifi
+
+**7. Status:**  
+Passou
