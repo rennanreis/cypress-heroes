@@ -31,7 +31,34 @@ describe('Heroes App - Basic Features', () => {
   });
 
   it('should allow adding a new hero', () => {
-    // to be implemented
+    // open login modal
+    cy.contains('Login').click({ force: true });
+
+    // login with valid credentials
+    cy.get('form').within(() => {
+      cy.get('input[type="email"]').type('admin@test.com');
+      cy.get('input[type="password"]').type('test123');
+      cy.contains('Sign in').click();
+    });
+
+    // wait for login to complete
+    cy.contains('Logout').should('be.visible');
+
+    // click "Create New Hero"
+    cy.contains('Create New Hero').click();
+
+    // fill out the hero form
+    cy.get('form').within(() => {
+      cy.get('input[name="name"]').type('Cypress Hero');
+      cy.get('input[name="price"]').type('88');
+      cy.get('input[name="fans"]').type('47');
+      cy.get('input[name="saves"]').type('99');
+      cy.get('select[name="powers"]').select('Flying');
+      cy.contains('Submit').click();
+    });
+
+    // confirm hero appears on the list
+    cy.contains('Cypress Hero').should('exist');
   });
 
   it('should allow deleting a hero', () => {
