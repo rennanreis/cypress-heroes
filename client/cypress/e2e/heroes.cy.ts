@@ -1,82 +1,84 @@
 describe('Heroes App - Basic Features', () => {
   beforeEach(() => {
-    // go to the main page
+    // navigate to the main page
     cy.visit('/heroes');
   });
 
-  it('should display the login button and open modal', () => {
-    // check if login button is visible and click it
+  it('should open login modal when login button is clicked', () => {
     cy.contains('Login', { timeout: 5000 })
       .should('exist')
       .and('be.visible')
       .click({ force: true });
 
-    // check if login modal is displayed
     cy.get('form').should('exist');
   });
 
-  it('should log in with valid credentials', () => {
-    // open login modal
+  it('should log in successfully with valid credentials', () => {
     cy.contains('Login').click({ force: true });
 
-    // fill form and submit
-    cy.get('form').within(() => {
-      cy.get('input[type="email"]').type('admin@test.com'); // email input
-      cy.get('input[type="password"]').type('test123');     // password input
-      cy.contains('Sign in').click();                       // submit button
-    });
-
-    // check if logged in successfully
-    cy.contains('Logout').should('be.visible');
-  });
-
-  it('should allow adding a new hero', () => {
-      // open login modal
-      cy.contains('Login').click({ force: true });
-
-      // login with valid credentials
-      cy.get('form').within(() => {
-        cy.get('input[type="email"]').type('admin@test.com');
-        cy.get('input[type="password"]').type('test123');
-        cy.contains('Sign in').click();
-      });
-
-      // wait for login to complete
-      cy.contains('Logout').should('be.visible');
-
-      // click "Create New Hero"
-      cy.contains('Create New Hero').click();
-
-      // fill out the hero form
-      cy.get('form').within(() => {
-        cy.get('input[name="name"]').type('Cypress Hero');
-        cy.get('input[name="price"]').type('88');
-        cy.get('input[name="fans"]').type('47');
-        cy.get('input[name="saves"]').type('99');
-        cy.get('select[name="powers"]').select('Flying');
-        cy.contains('Submit').click();
-      });
-
-      // confirm hero appears on the list
-      cy.contains('Cypress Hero').should('exist');
-    });
-
-    it('should allow deleting a hero created in this test', () => {
-      const heroName = `Cypress Hero ${Date.now()}`;
-
-    // open login modal and log in
-    cy.contains('Login').click({ force: true });
     cy.get('form').within(() => {
       cy.get('input[type="email"]').type('admin@test.com');
       cy.get('input[type="password"]').type('test123');
       cy.contains('Sign in').click();
     });
-    cy.contains('Logout').should('be.visible');
 
-    // go to create hero form
+    cy.contains('Logout').should('be.visible');
+  });
+
+  it('should display an error when using invalid credentials', () => {
+    // open login modal
+    cy.contains('Login').click({ force: true });
+
+    // attempt to log in with invalid credentials
+    cy.get('form').within(() => {
+      cy.get('input[type="email"]').type('invalid@user.com');
+      cy.get('input[type="password"]').type('wrongpass');
+      cy.contains('Sign in').click();
+    });
+
+    // validate error message
+    cy.contains('Invalid email or password').should('be.visible');
+  });
+
+
+  it('should create a new hero successfully', () => {
+    cy.contains('Login').click({ force: true });
+
+    cy.get('form').within(() => {
+      cy.get('input[type="email"]').type('admin@test.com');
+      cy.get('input[type="password"]').type('test123');
+      cy.contains('Sign in').click();
+    });
+
+    cy.contains('Logout').should('be.visible');
     cy.contains('Create New Hero').click();
 
-    // fill hero creation form
+    cy.get('form').within(() => {
+      cy.get('input[name="name"]').type('Cypress Hero');
+      cy.get('input[name="price"]').type('88');
+      cy.get('input[name="fans"]').type('47');
+      cy.get('input[name="saves"]').type('99');
+      cy.get('select[name="powers"]').select('Flying');
+      cy.contains('Submit').click();
+    });
+
+    cy.contains('Cypress Hero').should('exist');
+  });
+
+  it('should delete a hero created during this test', () => {
+    const heroName = `Cypress Hero ${Date.now()}`;
+
+    cy.contains('Login').click({ force: true });
+
+    cy.get('form').within(() => {
+      cy.get('input[type="email"]').type('admin@test.com');
+      cy.get('input[type="password"]').type('test123');
+      cy.contains('Sign in').click();
+    });
+
+    cy.contains('Logout').should('be.visible');
+    cy.contains('Create New Hero').click();
+
     cy.get('form').within(() => {
       cy.get('input[name="name"]').type(heroName);
       cy.get('input[name="price"]').type('77');
@@ -86,10 +88,8 @@ describe('Heroes App - Basic Features', () => {
       cy.contains('Submit').click();
     });
 
-    // confirm hero exists
     cy.contains(heroName).should('exist');
 
-    // delete hero
     cy.contains(heroName)
       .parents('[data-cy=hero-card]')
       .within(() => {
@@ -98,7 +98,6 @@ describe('Heroes App - Basic Features', () => {
 
     cy.contains('button', 'Yes').click();
 
-    // confirm hero no longer exists
     cy.contains(heroName).should('not.exist');
   });
 });
