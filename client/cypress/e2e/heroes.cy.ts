@@ -31,37 +31,74 @@ describe('Heroes App - Basic Features', () => {
   });
 
   it('should allow adding a new hero', () => {
-    // open login modal
-    cy.contains('Login').click({ force: true });
+      // open login modal
+      cy.contains('Login').click({ force: true });
 
-    // login with valid credentials
+      // login with valid credentials
+      cy.get('form').within(() => {
+        cy.get('input[type="email"]').type('admin@test.com');
+        cy.get('input[type="password"]').type('test123');
+        cy.contains('Sign in').click();
+      });
+
+      // wait for login to complete
+      cy.contains('Logout').should('be.visible');
+
+      // click "Create New Hero"
+      cy.contains('Create New Hero').click();
+
+      // fill out the hero form
+      cy.get('form').within(() => {
+        cy.get('input[name="name"]').type('Cypress Hero');
+        cy.get('input[name="price"]').type('88');
+        cy.get('input[name="fans"]').type('47');
+        cy.get('input[name="saves"]').type('99');
+        cy.get('select[name="powers"]').select('Flying');
+        cy.contains('Submit').click();
+      });
+
+      // confirm hero appears on the list
+      cy.contains('Cypress Hero').should('exist');
+    });
+
+    it('should allow deleting a hero created in this test', () => {
+      const heroName = `Cypress Hero ${Date.now()}`;
+
+    // open login modal and log in
+    cy.contains('Login').click({ force: true });
     cy.get('form').within(() => {
       cy.get('input[type="email"]').type('admin@test.com');
       cy.get('input[type="password"]').type('test123');
       cy.contains('Sign in').click();
     });
-
-    // wait for login to complete
     cy.contains('Logout').should('be.visible');
 
-    // click "Create New Hero"
+    // go to create hero form
     cy.contains('Create New Hero').click();
 
-    // fill out the hero form
+    // fill hero creation form
     cy.get('form').within(() => {
-      cy.get('input[name="name"]').type('Cypress Hero');
-      cy.get('input[name="price"]').type('88');
-      cy.get('input[name="fans"]').type('47');
-      cy.get('input[name="saves"]').type('99');
-      cy.get('select[name="powers"]').select('Flying');
+      cy.get('input[name="name"]').type(heroName);
+      cy.get('input[name="price"]').type('77');
+      cy.get('input[name="fans"]').type('33');
+      cy.get('input[name="saves"]').type('11');
+      cy.get('select[name="powers"]').select('Fireball');
       cy.contains('Submit').click();
     });
 
-    // confirm hero appears on the list
-    cy.contains('Cypress Hero').should('exist');
-  });
+    // confirm hero exists
+    cy.contains(heroName).should('exist');
 
-  it('should allow deleting a hero', () => {
-    // to be implemented
+    // delete hero
+    cy.contains(heroName)
+      .parents('[data-cy=hero-card]')
+      .within(() => {
+        cy.get('[data-cy=trash]').click();
+      });
+
+    cy.contains('button', 'Yes').click();
+
+    // confirm hero no longer exists
+    cy.contains(heroName).should('not.exist');
   });
 });
